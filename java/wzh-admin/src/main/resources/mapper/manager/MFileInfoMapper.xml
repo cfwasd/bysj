@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wzh.manager.mapper.MFileInfoMapper">
+    
+    <resultMap type="MFileInfo" id="MFileInfoResult">
+        <result property="id"    column="id"    />
+        <result property="uuid"    column="uuid"    />
+        <result property="folder"    column="folder"    />
+        <result property="folderId"    column="folder_id"    />
+        <result property="fileRealFolder"    column="file_real_folder"    />
+        <result property="fileRawName"    column="file_raw_name"    />
+        <result property="fileName"    column="file_name"    />
+        <result property="fileExtentions"    column="file_extentions"    />
+        <result property="ossUrl"    column="oss_url"    />
+    </resultMap>
+
+    <sql id="selectMFileInfoVo">
+        select id, uuid, folder, folder_id, file_real_folder, file_raw_name, file_name, file_extentions, oss_url from m_file_info
+    </sql>
+
+    <select id="selectMFileInfoList" parameterType="MFileInfo" resultMap="MFileInfoResult">
+        <include refid="selectMFileInfoVo"/>
+        <where>  
+            <if test="uuid != null "> and uuid = #{uuid}</if>
+            <if test="folder != null  and folder != ''"> and folder = #{folder}</if>
+            <if test="folderId != null "> and folder_id = #{folderId}</if>
+            <if test="fileRealFolder != null  and fileRealFolder != ''"> and file_real_folder = #{fileRealFolder}</if>
+            <if test="fileRawName != null  and fileRawName != ''"> and file_raw_name like concat('%', #{fileRawName}, '%')</if>
+            <if test="fileName != null  and fileName != ''"> and file_name like concat('%', #{fileName}, '%')</if>
+            <if test="fileExtentions != null  and fileExtentions != ''"> and file_extentions = #{fileExtentions}</if>
+            <if test="ossUrl != null  and ossUrl != ''"> and oss_url = #{ossUrl}</if>
+        </where>
+    </select>
+    
+    <select id="selectMFileInfoById" parameterType="Long" resultMap="MFileInfoResult">
+        <include refid="selectMFileInfoVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertMFileInfo" parameterType="MFileInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into m_file_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="uuid != null">uuid,</if>
+            <if test="folder != null">folder,</if>
+            <if test="folderId != null">folder_id,</if>
+            <if test="fileRealFolder != null">file_real_folder,</if>
+            <if test="fileRawName != null">file_raw_name,</if>
+            <if test="fileName != null">file_name,</if>
+            <if test="fileExtentions != null">file_extentions,</if>
+            <if test="ossUrl != null">oss_url,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="uuid != null">#{uuid},</if>
+            <if test="folder != null">#{folder},</if>
+            <if test="folderId != null">#{folderId},</if>
+            <if test="fileRealFolder != null">#{fileRealFolder},</if>
+            <if test="fileRawName != null">#{fileRawName},</if>
+            <if test="fileName != null">#{fileName},</if>
+            <if test="fileExtentions != null">#{fileExtentions},</if>
+            <if test="ossUrl != null">#{ossUrl},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMFileInfo" parameterType="MFileInfo">
+        update m_file_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="uuid != null">uuid = #{uuid},</if>
+            <if test="folder != null">folder = #{folder},</if>
+            <if test="folderId != null">folder_id = #{folderId},</if>
+            <if test="fileRealFolder != null">file_real_folder = #{fileRealFolder},</if>
+            <if test="fileRawName != null">file_raw_name = #{fileRawName},</if>
+            <if test="fileName != null">file_name = #{fileName},</if>
+            <if test="fileExtentions != null">file_extentions = #{fileExtentions},</if>
+            <if test="ossUrl != null">oss_url = #{ossUrl},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMFileInfoById" parameterType="Long">
+        delete from m_file_info where id = #{id}
+    </delete>
+
+    <delete id="deleteMFileInfoByIds" parameterType="String">
+        delete from m_file_info where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

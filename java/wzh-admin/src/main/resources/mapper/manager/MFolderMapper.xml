@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wzh.manager.mapper.MFolderMapper">
+    
+    <resultMap type="MFolder" id="MFolderResult">
+        <result property="id"    column="id"    />
+        <result property="floderName"    column="floder_name"    />
+        <result property="pFloderName"    column="p_floder_name"    />
+        <result property="fileCount"    column="file_count"    />
+    </resultMap>
+
+    <sql id="selectMFolderVo">
+        select id, floder_name, p_floder_name, file_count from m_folder
+    </sql>
+
+    <select id="selectMFolderList" parameterType="MFolder" resultMap="MFolderResult">
+        <include refid="selectMFolderVo"/>
+        <where>  
+            <if test="floderName != null  and floderName != ''"> and floder_name like concat('%', #{floderName}, '%')</if>
+            <if test="pFloderName != null  and pFloderName != ''"> and p_floder_name like concat('%', #{pFloderName}, '%')</if>
+            <if test="fileCount != null  and fileCount != ''"> and file_count = #{fileCount}</if>
+        </where>
+    </select>
+    
+    <select id="selectMFolderById" parameterType="Long" resultMap="MFolderResult">
+        <include refid="selectMFolderVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertMFolder" parameterType="MFolder" useGeneratedKeys="true" keyProperty="id">
+        insert into m_folder
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="floderName != null">floder_name,</if>
+            <if test="pFloderName != null">p_floder_name,</if>
+            <if test="fileCount != null">file_count,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="floderName != null">#{floderName},</if>
+            <if test="pFloderName != null">#{pFloderName},</if>
+            <if test="fileCount != null">#{fileCount},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMFolder" parameterType="MFolder">
+        update m_folder
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="floderName != null">floder_name = #{floderName},</if>
+            <if test="pFloderName != null">p_floder_name = #{pFloderName},</if>
+            <if test="fileCount != null">file_count = #{fileCount},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMFolderById" parameterType="Long">
+        delete from m_folder where id = #{id}
+    </delete>
+
+    <delete id="deleteMFolderByIds" parameterType="String">
+        delete from m_folder where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
