@@ -22,6 +22,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="pFloderName != null  and pFloderName != ''"> and p_floder_name like concat('%', #{pFloderName}, '%')</if>
             <if test="fileCount != null  and fileCount != ''"> and file_count = #{fileCount}</if>
         </where>
+        order by id
     </select>
     
     <select id="selectMFolderById" parameterType="Long" resultMap="MFolderResult">

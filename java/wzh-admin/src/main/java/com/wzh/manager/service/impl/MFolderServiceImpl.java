@@ -1,6 +1,10 @@
 package com.wzh.manager.service.impl;
 
-import java.util.List;
+import java.util.*;
+
+import com.wzh.manager.domain.MFolderVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.wzh.manager.mapper.MFolderMapper;
@@ -16,6 +20,7 @@ import com.wzh.manager.service.IMFolderService;
 @Service
 public class MFolderServiceImpl implements IMFolderService 
 {
+    private static final Logger log = LoggerFactory.getLogger(MFolderServiceImpl.class);
     @Autowired
     private MFolderMapper mFolderMapper;
 
@@ -90,4 +95,61 @@ public class MFolderServiceImpl implements IMFolderService
     {
         return mFolderMapper.deleteMFolderById(id);
     }
+
+    @Override
+    public List<MFolderVo> deepTree(MFolder mFolder) {
+        List<MFolder> folders = mFolderMapper.selectMFolderList(mFolder);
+        return this.buildTree(folders);
+    }
+
+    public List<MFolderVo> buildTree(List<MFolder> list) {
+        Map<String, MFolderVo> result = new LinkedHashMap<>();
+        result.put("/", new MFolderVo());
+        for (MFolder folder : list) {
+            if (folder.getpFloderName().equals("/")){
+                MFolderVo p = result.get("/");
+                MFolderVo mFolderVo = new MFolderVo();
+                mFolderVo.setId(folder.getId());
+                mFolderVo.setFloderName(folder.getFloderName());
+                mFolderVo.setpFloderName(folder.getpFloderName());
+                mFolderVo.setFileCount(folder.getFileCount());
+                p.getChildren().add(mFolderVo);
+                result.put("/", p);
+            }
+        }
+        List<MFolderVo> children = result.get("/").getChildren();
+        List<MFolderVo> res = new ArrayList<>();
+//        log.info("{}",result);
+        for (MFolderVo mFolderVo : children) {
+            mFolderVo=deepTree2(false,mFolderVo,list);
+            res.add(mFolderVo);
+        }
+        log.info("{}",res);
+
+        return res;
+    }
+
+    public MFolderVo deepTree2(boolean isFinish,MFolderVo vo, List<MFolder> list) {
+        if (isFinish){
+            return vo;
+        }else {
+            for (MFolder folder : list) {
+                if (folder.getpFloderName().equals(vo.getFloderName())){
+                    MFolderVo mFolderVo = new MFolderVo();
+                    mFolderVo.setId(folder.getId());
+                    mFolderVo.setFloderName(folder.getFloderName());
+                    mFolderVo.setpFloderName(folder.getpFloderName());
+                    mFolderVo.setFileCount(folder.getFileCount());
+                    vo.getChildren().add(mFolderVo);
+                    deepTree2(false,mFolderVo,list);
+                }
+                else {
+                    deepTree2(true,vo,list);
+                }
+            }
+        }
+        return vo;
+    }
+
+
 }

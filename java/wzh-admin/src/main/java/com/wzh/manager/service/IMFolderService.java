@@ -1,7 +1,10 @@
 package com.wzh.manager.service;
 
 import java.util.List;
+import java.util.Map;
+
 import com.wzh.manager.domain.MFolder;
+import com.wzh.manager.domain.MFolderVo;
 
 /**
  * 逻辑文件夹Service接口
@@ -58,4 +61,6 @@ public interface IMFolderService
      * @return 结果
      */
     public int deleteMFolderById(Long id);
+
+    List<MFolderVo> deepTree(MFolder mFolder);
 }

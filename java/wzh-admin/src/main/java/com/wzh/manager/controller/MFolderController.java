@@ -1,7 +1,11 @@
 package com.wzh.manager.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
+
+import com.wzh.manager.domain.MFolderVo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,6 +48,19 @@ public class MFolderController extends BaseController
         startPage();
         List<MFolder> list = mFolderService.selectMFolderList(mFolder);
         return getDataTable(list);
+    }
+
+    /**
+     * 查询逻辑文件夹列表
+     */
+    @PreAuthorize("@ss.hasPermi('manager:folder:list')")
+    @GetMapping("/deepTree")
+    public AjaxResult deepTree(MFolder mFolder)
+    {
+
+        List<MFolderVo> list = mFolderService.deepTree(mFolder);
+
+        return AjaxResult.success(list);
     }
 
     /**
