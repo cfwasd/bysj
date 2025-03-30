@@ -20,7 +20,7 @@ public class MFileInfo extends BaseEntity
 
     /** 文件uuid */
     @Excel(name = "文件uuid")
-    private Long uuid;
+    private String uuid;
 
     /** 文件逻辑位置 */
     @Excel(name = "文件逻辑位置")
@@ -60,12 +60,12 @@ public class MFileInfo extends BaseEntity
         return id;
     }
 
-    public void setUuid(Long uuid) 
+    public void setUuid(String uuid)
     {
         this.uuid = uuid;
     }
 
-    public Long getUuid() 
+    public String getUuid()
     {
         return uuid;
     }

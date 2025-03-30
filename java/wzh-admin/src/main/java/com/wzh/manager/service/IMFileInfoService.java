@@ -58,4 +58,6 @@ public interface IMFileInfoService
      * @return 结果
      */
     public int deleteMFileInfoById(Long id);
+
+    List<MFileInfo> selectMFileInfoByTreeId(Long treeId);
 }

@@ -38,6 +38,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectMFileInfoVo"/>
         where id = #{id}
     </select>
+    <select id="selectMFileInfoByTreeId" resultMap="MFileInfoResult">
+        <include refid="selectMFileInfoVo" />
+            where folder_id = #{treeId}
+            order by id
+    </select>
 
     <insert id="insertMFileInfo" parameterType="MFileInfo" useGeneratedKeys="true" keyProperty="id">
         insert into m_file_info

@@ -124,7 +124,7 @@ public class MFolderServiceImpl implements IMFolderService
             mFolderVo=deepTree2(false,mFolderVo,list);
             res.add(mFolderVo);
         }
-        log.info("{}",res);
+
 
         return res;
     }

@@ -1,5 +1,6 @@
 package com.wzh.manager.service.impl;
 
+import java.util.Collections;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -89,5 +90,10 @@ public class MFileInfoServiceImpl implements IMFileInfoService
     public int deleteMFileInfoById(Long id)
     {
         return mFileInfoMapper.deleteMFileInfoById(id);
+    }
+
+    @Override
+    public List<MFileInfo> selectMFileInfoByTreeId(Long treeId) {
+        return mFileInfoMapper.selectMFileInfoByTreeId(treeId);
     }
 }

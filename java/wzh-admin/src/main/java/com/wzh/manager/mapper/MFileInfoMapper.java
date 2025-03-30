@@ -2,6 +2,7 @@ package com.wzh.manager.mapper;
 
 import java.util.List;
 import com.wzh.manager.domain.MFileInfo;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 文件信息Mapper接口
@@ -9,6 +10,7 @@ import com.wzh.manager.domain.MFileInfo;
  * @author wzh
  * @date 2025-03-23
  */
+@Mapper
 public interface MFileInfoMapper 
 {
     /**
@@ -58,4 +60,6 @@ public interface MFileInfoMapper
      * @return 结果
      */
     public int deleteMFileInfoByIds(Long[] ids);
+
+    List<MFileInfo> selectMFileInfoByTreeId(Long treeId);
 }

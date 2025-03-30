@@ -2,6 +2,7 @@ package com.wzh.manager.mapper;
 
 import java.util.List;
 import com.wzh.manager.domain.MFolder;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 逻辑文件夹Mapper接口
@@ -9,6 +10,7 @@ import com.wzh.manager.domain.MFolder;
  * @author ruoyi
  * @date 2025-03-23
  */
+@Mapper
 public interface MFolderMapper 
 {
     /**

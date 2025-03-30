@@ -4,14 +4,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.wzh.common.annotation.Log;
 import com.wzh.common.core.controller.BaseController;
 import com.wzh.common.core.domain.AjaxResult;
@@ -43,6 +36,19 @@ public class MFileInfoController extends BaseController
     {
         startPage();
         List<MFileInfo> list = mFileInfoService.selectMFileInfoList(mFileInfo);
+        return getDataTable(list);
+    }
+
+
+    /**
+     * 查询文件信息列表
+     */
+    @PreAuthorize("@ss.hasPermi('manager:fileInfo:list')")
+    @GetMapping("/query")
+    public TableDataInfo queryByTreeId(@RequestParam("treeId") Long treeId)
+    {
+        startPage();
+        List<MFileInfo> list = mFileInfoService.selectMFileInfoByTreeId(treeId);
         return getDataTable(list);
     }
 

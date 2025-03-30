@@ -57,9 +57,7 @@ public class MFolderController extends BaseController
     @GetMapping("/deepTree")
     public AjaxResult deepTree(MFolder mFolder)
     {
-
         List<MFolderVo> list = mFolderService.deepTree(mFolder);
-
         return AjaxResult.success(list);
     }
 
