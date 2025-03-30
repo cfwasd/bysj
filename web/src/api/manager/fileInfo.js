@@ -9,6 +9,15 @@ export function listFileInfo(query) {
   })
 }
 
+// 通过文件夹id查询文件信息
+export function queryByTreeId(query) {
+  return request({
+    url: '/manager/fileInfo/query',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询文件信息详细
 export function getFileInfo(id) {
   return request({

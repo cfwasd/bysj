@@ -1,75 +1,47 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="文件夹名称" label-width="auto" prop="floderName">
-        <el-input
-          v-model="queryParams.floderName"
-          placeholder="请输入文件夹名称"
-          clearable
-          @keyup.enter="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
-
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="Plus"
-          @click="handleAdd"
-          v-hasPermi="['manager:folder:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="Edit"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['manager:folder:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="Delete"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['manager:folder:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="Download"
-          @click="handleExport"
-          v-hasPermi="['manager:folder:export']"
-        >导出</el-button>
-      </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
 <el-text class="mx-1" type="success" size="large">当前目录:{{floder}}</el-text>
-<!--    <el-table v-loading="loading" :data="folderList" @selection-change="handleSelectionChange">-->
-<!--      <el-table-column type="selection" width="55" align="center" />-->
-<!--      <el-table-column label="文件夹名称" align="center" prop="floderName" />-->
-<!--      <el-table-column label="父文件夹名称" align="center" prop="pFloderName" />-->
-<!--      <el-table-column label="文件个数" align="center" prop="fileCount" />-->
-<!--      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">-->
-<!--        <template #default="scope">-->
-<!--          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['manager:folder:edit']">修改</el-button>-->
-<!--          <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['manager:folder:remove']">删除</el-button>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-<!--    </el-table>-->
-    
+    <div class="common-layout">
+      <el-container>
+        <el-aside class="aside">
+          <el-tree
+              style="max-width: 200px"
+              ref="treeRef"
+              node-key="id"
+              :highlight-current="true"
+              :data="folderData"
+              :props="defaultProps"
+              @node-click="handleNodeClick">
+            <template #default="{ node, data }">
+              <div class="custom-tree-node">
+                    <span>{{ node.label }} &nbsp;
+                      <el-text type="primary" link @click="appendFolder(data)">
+                        <el-icon v-hasPermi="['manager:folder:add']" ><FolderAdd /></el-icon>
+                      </el-text>
+                    </span>
+              </div>
+            </template>
+          </el-tree>
+        </el-aside>
+        <el-main>
+          <el-table :data="tableData">
+            <el-table-column prop="id" label="文件id"  />
+            <el-table-column prop="fileRawName" label="文件名" />
+            <el-table-column fixed="right" label="操作" min-width="120">
+              <template #default="scope">
+                <el-button link type="primary" size="small" @click="previewFile(scope.row.ossUrl)">
+                  预览文件
+                </el-button>
+                <el-button link type="primary" size="small" @click="removeFile(scope.row.id,scope.row.folderId)">删除文件</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-main>
+      </el-container>
+    </div>
+
+
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -83,6 +55,7 @@
       <el-form ref="folderRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="文件夹名称" prop="floderName">
           <el-input v-model="form.floderName" placeholder="请输入文件夹名称" />
+
         </el-form-item>
       </el-form>
       <template #footer>
@@ -95,27 +68,37 @@
   </div>
 </template>
 
-<script setup name="Folder">
-import { listFolder, getFolder, delFolder, addFolder, updateFolder } from "@/api/manager/folder";
+<script setup lang="ts" name="Folder">
+import { listFolder, getFolder, delFolder, addFolder, updateFolder,deepTree } from "@/api/manager/folder";
+import { queryByTreeId,delFileInfo } from '@/api/manager/fileInfo'
+import {Tree,File} from './data'
+import {ElMessage, TreeInstance} from 'element-plus'
+import {ref} from "vue";
 
 const { proxy } = getCurrentInstance();
 let floder = ref("/")
-
+const folderData:Tree = ref<Tree>()
+const treeRef = ref<TreeInstance>()
+const pName = ref("/")
 const folderList = ref([]);
 const open = ref(false);
 const loading = ref(true);
-const showSearch = ref(true);
+const showSearch = ref(false);
 const ids = ref([]);
 const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
+const tableData:File = ref<Array<File>>([])
+const treeId:number = ref<number>(1)
+
 
 const data = reactive({
   form: {},
   queryParams: {
     pageNum: 1,
     pageSize: 10,
+    treeId: treeId,
     floderName: null,
     pFloderName: null,
     fileCount: null
@@ -124,16 +107,69 @@ const data = reactive({
   }
 });
 
+const defaultProps = {
+  children: 'children',
+  label: 'floderName',
+}
+
 const { queryParams, form, rules } = toRefs(data);
 
 /** 查询逻辑文件夹列表 */
 function getList() {
   loading.value = true;
-  listFolder(queryParams.value).then(response => {
-    folderList.value = response.rows;
+  queryByTreeId(queryParams.value).then(response => {
+    tableData.value = response.rows;
     total.value = response.total;
     loading.value = false;
   });
+}
+function  appendFolder(data){
+  // console.log(data.floderName);
+  reset();
+  pName.value = data.floderName;
+  open.value = true;
+  title.value = "添加文件夹";
+}
+function previewFile(ossUrl: string){
+  console.log("ossUrl: ", ossUrl);
+}
+function removeFile(fileId: number,folderId: number) {
+  delFileInfo(fileId).then(response => {
+    if (response.code === 200) {
+      queryFileData(folderId)
+    }
+  })
+}
+
+const handleNodeClick = (data: Tree) =>{
+  let temp= treeRef.value.getNode(data)
+  queryFileData(data.id)
+  floder.value = "/"+ handleFolder(temp,temp.data.floderName)
+}
+
+function handleFolder(d,resultName) {
+  if (d.parent.level == 0){
+    return resultName
+  }else{
+    let res = d.parent.data.floderName +"/"+ resultName
+    return handleFolder(d.parent,res)
+  }
+}
+
+function queryFileData(TreeId: Number){
+  queryParams.value.treeId = TreeId;
+  queryByTreeId(queryParams.value).then(response => {
+    tableData.value = response.rows;
+    total.value = response.total;
+    loading.value = false;
+  })
+}
+
+function queryDeepTree(){
+  deepTree(queryParams.value).then(response => {
+    // console.log("wwww"+JSON.stringify(response.data))
+    folderData.value = response.data;
+  })
 }
 
 // 取消按钮
@@ -147,7 +183,7 @@ function reset() {
   form.value = {
     id: null,
     floderName: null,
-    pFloderName: null,
+    pFloderName: pName.value,
     fileCount: null
   };
   proxy.resetForm("folderRef");
@@ -176,7 +212,7 @@ function handleSelectionChange(selection) {
 function handleAdd() {
   reset();
   open.value = true;
-  title.value = "添加逻辑文件夹";
+  title.value = "添加文件夹";
 }
 
 /** 修改按钮操作 */
@@ -201,10 +237,11 @@ function submitForm() {
           getList();
         });
       } else {
+        form.value.pFloderName = pName.value;
         addFolder(form.value).then(response => {
           proxy.$modal.msgSuccess("新增成功");
           open.value = false;
-          getList();
+          init();
         });
       }
     }
@@ -229,5 +266,31 @@ function handleExport() {
   }, `folder_${new Date().getTime()}.xlsx`)
 }
 
-getList();
+/**
+ * 下面执行初始化需要调用的函数
+ */
+function init(){
+  queryFileData(1);
+  queryDeepTree();
+  getList();
+}
+
+
+init();
 </script>
+
+<style>
+.aside{
+  background: #ffffff;
+  padding: 0px 0px;
+  margin-bottom: 5px;
+  border-radius: 2px;
+  display: block;
+  line-height: 32px;
+  font-size: 16px;
+  width: 20%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  color: #2c3e50;
+  -webkit-font-smoothing: antialiased;
+}
+</style>

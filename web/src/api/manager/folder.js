@@ -9,6 +9,15 @@ export function listFolder(query) {
   })
 }
 
+// 查询逻辑文件夹树形结构
+export function deepTree(query) {
+  return request({
+    url: '/manager/folder/deepTree',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询逻辑文件夹详细
 export function getFolder(id) {
   return request({
