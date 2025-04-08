@@ -87,6 +87,14 @@ spring:
         max-active: 8
         # #连接池最大阻塞等待时间（使用负值表示没有限制）
         max-wait: -1ms
+# minio 连接参数
+minio:
+  url: http://154.201.84.30:9000
+  accessKey: RJzdwoAh07s2N9gzeWS9
+  secretKey: hVYncaivU3IVF7UWzDG9eaKNBhXGwZTsplZt6NIH
+  bucketName: file
+  preview: https://prem.wangziheng.cloud/file/
+#  preview-expiry: 24 //图片预览过期时间 不需要可注掉
 
 # token配置
 token:
