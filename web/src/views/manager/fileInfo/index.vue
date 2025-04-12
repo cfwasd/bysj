@@ -41,23 +41,23 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="Plus"
-          @click="handleAdd"
-          v-hasPermi="['manager:fileInfo:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="Edit"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['manager:fileInfo:edit']"
-        >修改</el-button>
+<!--        <el-button-->
+<!--          type="primary"-->
+<!--          plain-->
+<!--          icon="Plus"-->
+<!--          @click="handleAdd"-->
+<!--          v-hasPermi="['manager:fileInfo:add']"-->
+<!--        >新增</el-button>-->
+<!--      </el-col>-->
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          type="success"-->
+<!--          plain-->
+<!--          icon="Edit"-->
+<!--          :disabled="single"-->
+<!--          @click="handleUpdate"-->
+<!--          v-hasPermi="['manager:fileInfo:edit']"-->
+<!--        >修改</el-button>-->
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -69,15 +69,15 @@
           v-hasPermi="['manager:fileInfo:remove']"
         >删除</el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="Download"
-          @click="handleExport"
-          v-hasPermi="['manager:fileInfo:export']"
-        >导出</el-button>
-      </el-col>
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          type="warning"-->
+<!--          plain-->
+<!--          icon="Download"-->
+<!--          @click="handleExport"-->
+<!--          v-hasPermi="['manager:fileInfo:export']"-->
+<!--        >导出</el-button>-->
+<!--      </el-col>-->
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -91,7 +91,7 @@
       <el-table-column label="文件oss地址" align="center" prop="ossUrl" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['manager:fileInfo:edit']">修改</el-button>
+          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['manager:fileInfo:edit']">下载</el-button>
           <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['manager:fileInfo:remove']">删除</el-button>
         </template>
       </el-table-column>
@@ -229,13 +229,21 @@ function handleAdd() {
 
 /** 修改按钮操作 */
 function handleUpdate(row) {
-  reset();
-  const _id = row.id || ids.value
-  getFileInfo(_id).then(response => {
-    form.value = response.data;
-    open.value = true;
-    title.value = "修改文件信息";
-  });
+  console.log(row)
+  // const url = window.URL.createObjectURL(new Blob([row.ossUrl]));
+  const link = document.createElement('a')
+  link.href = row.ossUrl
+  link.setAttribute('download', row.fileRawName)
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  // reset();
+  // const _id = row.id || ids.value
+  // getFileInfo(_id).then(response => {
+  //   form.value = response.data;
+  //   open.value = true;
+  //   title.value = "修改文件信息";
+  // });
 }
 
 /** 提交按钮 */

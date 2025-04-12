@@ -77,7 +77,7 @@ import {ref} from "vue";
 
 const { proxy } = getCurrentInstance();
 let floder = ref("/")
-const folderData:Tree = ref<Tree>()
+const folderData = ref<Tree>()
 const treeRef = ref<TreeInstance>()
 const pName = ref("/")
 const folderList = ref([]);
