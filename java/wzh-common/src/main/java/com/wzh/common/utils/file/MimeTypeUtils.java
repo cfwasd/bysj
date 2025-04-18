@@ -37,7 +37,7 @@ public class MimeTypeUtils
             "mp4", "avi", "rmvb",
             // pdf
             "pdf","json","zip","exe","apk","rar" };
-    
+
 
     public static String getExtension(String prefix)
     {

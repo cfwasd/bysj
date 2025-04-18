@@ -42,6 +42,8 @@ import ImageUpload from "@/components/ImageUpload"
 import ImagePreview from "@/components/ImagePreview"
 // 字典标签组件
 import DictTag from '@/components/DictTag'
+import FolderTree from 'vue-folder-tree'
+import 'vue-folder-tree/dist/vue-folder-tree.css'
 
 const app = createApp(App)
 
@@ -69,6 +71,7 @@ app.use(store)
 app.use(plugins)
 app.use(elementIcons)
 app.component('svg-icon', SvgIcon)
+app.use(FolderTree)
 
 directive(app)
 
