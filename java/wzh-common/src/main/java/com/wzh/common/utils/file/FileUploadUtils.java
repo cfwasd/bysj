@@ -166,7 +166,7 @@ public class FileUploadUtils
         }
     }
 
-    private static final String uploadMinino(String bucketName, MultipartFile file, String[] allowedExtension)
+    private static  String uploadMinino(String bucketName, MultipartFile file, String[] allowedExtension)
             throws FileSizeLimitExceededException, IOException, FileNameLengthLimitExceededException,
             InvalidExtensionException
     {
@@ -300,4 +300,6 @@ public class FileUploadUtils
         }
         return extension;
     }
+
+
 }

@@ -5,4 +5,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface IMUploadService {
     public AjaxResult upload(Integer id, MultipartFile[] files);
+
+    String preview(Integer fileId);
+
+    String download(Integer fileId);
 }
