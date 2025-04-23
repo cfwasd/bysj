@@ -22,7 +22,7 @@ export const toolbars = [
     '-',
     'revoke',
     'next',
-    'save',
+    // 'save',
     0,
     '=',
     'pageFullscreen',
