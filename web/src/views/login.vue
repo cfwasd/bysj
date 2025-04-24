@@ -58,9 +58,9 @@
       </el-form-item>
     </el-form>
     <!--  底部  -->
-    <div class="el-login-footer">
-      <span>Copyright © 2018-2025 ruoyi.vip All Rights Reserved.</span>
-    </div>
+<!--    <div class="el-login-footer">-->
+<!--      <span>Copyright © 2018-2025 ruoyi.vip All Rights Reserved.</span>-->
+<!--    </div>-->
   </div>
 </template>
 
@@ -77,8 +77,8 @@ const router = useRouter();
 const { proxy } = getCurrentInstance();
 
 const loginForm = ref({
-  username: "admin",
-  password: "admin123",
+  username: "",
+  password: "",
   rememberMe: false,
   code: "",
   uuid: ""
@@ -169,7 +169,7 @@ getCookie();
   justify-content: center;
   align-items: center;
   height: 100%;
-  background-image: url("../assets/images/login-background.jpg");
+  background-image: url("../assets/images/login.png");
   background-size: cover;
 }
 .title {
@@ -180,7 +180,8 @@ getCookie();
 
 .login-form {
   border-radius: 6px;
-  background: #ffffff;
+  opacity: 0.8;
+  background: rgba(255, 250, 248, 0.76);
   width: 400px;
   padding: 25px 25px 5px 25px;
   .el-input {
