@@ -25,14 +25,14 @@
           @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label-width="auto" label="文件oss地址" prop="ossUrl">
-        <el-input
-          v-model="queryParams.ossUrl"
-          placeholder="请输入文件oss地址"
-          clearable
-          @keyup.enter="handleQuery"
-        />
-      </el-form-item>
+<!--      <el-form-item label-width="auto" label="文件oss地址" prop="ossUrl">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.ossUrl"-->
+<!--          placeholder="请输入文件oss地址"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" @click="resetQuery">重置</el-button>
@@ -87,11 +87,11 @@
       <el-table-column label="文件逻辑位置" align="center" prop="folder" />
       <el-table-column label="文件服务器位置" align="center" prop="fileRealFolder" />
       <el-table-column label="文件原始名" align="center" prop="fileRawName" />
-      <el-table-column label="文件后缀名" align="center" prop="fileExtentions" />
-      <el-table-column label="文件oss地址" align="center" prop="ossUrl" />
+      <el-table-column label="文件类型" align="center" prop="fileExtentions" />
+<!--      <el-table-column label="文件oss地址" align="center" prop="ossUrl" />-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['manager:fileInfo:edit']">下载</el-button>
+          <el-button link type="primary" icon="Download" @click="handleUpdate(scope.row)" v-hasPermi="['manager:fileInfo:edit']">下载</el-button>
           <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['manager:fileInfo:remove']">删除</el-button>
         </template>
       </el-table-column>
@@ -117,11 +117,8 @@
         <el-form-item label="文件原始名" prop="fileRawName">
           <el-input v-model="form.fileRawName" placeholder="请输入文件原始名" />
         </el-form-item>
-        <el-form-item label="文件后缀名" prop="fileExtentions">
-          <el-input v-model="form.fileExtentions" placeholder="请输入文件后缀名" />
-        </el-form-item>
-        <el-form-item label="文件oss地址" prop="ossUrl">
-          <el-input v-model="form.ossUrl" placeholder="请输入文件oss地址" />
+        <el-form-item label="文件类型" prop="fileExtentions">
+          <el-input v-model="form.fileExtentions" placeholder="请输入文件类型" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -136,6 +133,7 @@
 
 <script setup name="FileInfo">
 import { listFileInfo, getFileInfo, delFileInfo, addFileInfo, updateFileInfo } from "@/api/manager/fileInfo";
+import { getPreview, downloadFile } from '@/api/manager/files'
 
 const { proxy } = getCurrentInstance();
 
@@ -229,21 +227,18 @@ function handleAdd() {
 
 /** 修改按钮操作 */
 function handleUpdate(row) {
-  console.log(row)
-  // const url = window.URL.createObjectURL(new Blob([row.ossUrl]));
-  const link = document.createElement('a')
-  link.href = row.ossUrl
-  link.setAttribute('download', row.fileRawName)
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  // reset();
-  // const _id = row.id || ids.value
-  // getFileInfo(_id).then(response => {
-  //   form.value = response.data;
-  //   open.value = true;
-  //   title.value = "修改文件信息";
-  // });
+  downloadFile(row.id).then((response) => {
+    const fileName = row.fileRawName // 获取文件名
+    const blob = new Blob([response], { type: 'application/octet-stream' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = decodeURIComponent(fileName); // 解码文件名
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }).catch((error) => {
+    console.error('下载失败:', error);
+  });
+
 }
 
 /** 提交按钮 */

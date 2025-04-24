@@ -29,7 +29,7 @@
             <el-table-column prop="fileRawName" label="文件名" />
             <el-table-column fixed="right" label="操作" min-width="120">
               <template #default="scope">
-                <el-button link type="primary" size="small" @click="previewFile(scope.row.ossUrl)">
+                <el-button link type="primary" size="small" @click="previewFile(scope.row.id)">
                   预览文件
                 </el-button>
                 <el-button link type="primary" size="small" @click="removeFile(scope.row.id,scope.row.folderId)">删除文件</el-button>
@@ -71,9 +71,11 @@
 <script setup lang="ts" name="Folder">
 import { listFolder, getFolder, delFolder, addFolder, updateFolder,deepTree } from "@/api/manager/folder";
 import { queryByTreeId,delFileInfo } from '@/api/manager/fileInfo'
+import { getPreview, downloadFile } from '@/api/manager/files'
 import {Tree,File} from './data'
 import {ElMessage, TreeInstance} from 'element-plus'
 import {ref} from "vue";
+import {Base64} from 'js-base64'
 
 const { proxy } = getCurrentInstance();
 let floder = ref("/")
@@ -130,8 +132,13 @@ function  appendFolder(data){
   open.value = true;
   title.value = "添加文件夹";
 }
-function previewFile(ossUrl: string){
-  console.log("ossUrl: ", ossUrl);
+function previewFile(fileId){
+
+  getPreview(fileId).then(response => {
+    // const baseulrl = 'http://198.44.170.73:8012/onlinePreview?url='+encodeURIComponent(Base64.encode(response))
+    const baseulrl = 'https://preview.wangziheng.site/onlinePreview?url='+encodeURIComponent(Base64.encode(response))
+    window.open(baseulrl, '_blank');
+  })
 }
 function removeFile(fileId: number,folderId: number) {
   delFileInfo(fileId).then(response => {
