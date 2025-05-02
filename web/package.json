@@ -1,8 +1,8 @@
 {
-  "name": "ruoyi",
+  "name": "bysj",
   "version": "3.8.9",
-  "description": "若依管理系统",
-  "author": "若依",
+  "description": "个人空间管理系统",
+  "author": "wzh",
   "license": "MIT",
   "type": "module",
   "scripts": {

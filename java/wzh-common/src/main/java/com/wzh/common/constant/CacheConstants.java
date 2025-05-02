@@ -42,10 +42,6 @@ public class CacheConstants
      */
     public static final String PWD_ERR_CNT_KEY = "pwd_err_cnt:";
 
-    /**
-     * 公开文件缓存
-     */
-    public static final String PUBLIC_FILE_CACHE = "public_file:";
 
     /**
      * 临时文件缓存

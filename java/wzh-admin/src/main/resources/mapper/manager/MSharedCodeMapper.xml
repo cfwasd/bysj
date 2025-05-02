@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wzh.manager.mapper.MSharedCodeMapper">
+    
+    <resultMap type="MSharedCode" id="MSharedCodeResult">
+        <result property="id"    column="id"    />
+        <result property="code"    column="code"    />
+        <result property="status"    column="status"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectMSharedCodeVo">
+        select id, code, status, create_time from m_shared_code
+    </sql>
+
+    <select id="selectMSharedCodeList" parameterType="MSharedCode" resultMap="MSharedCodeResult">
+        <include refid="selectMSharedCodeVo"/>
+        <where>  
+            <if test="code != null  and code != ''"> and code = #{code}</if>
+            <if test="status != null "> and status = #{status}</if>
+        </where>
+        order by id desc
+    </select>
+    
+    <select id="selectMSharedCodeById" parameterType="Long" resultMap="MSharedCodeResult">
+        <include refid="selectMSharedCodeVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectUnOutDate" resultType="java.lang.String">
+        select code from m_shared_code where status = 0
+    </select>
+
+    <insert id="insertMSharedCode" parameterType="MSharedCode">
+        insert into m_shared_code
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="code != null">code,</if>
+            <if test="status != null">status,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="code != null">#{code},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMSharedCode" parameterType="MSharedCode">
+        update m_shared_code
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="code != null">code = #{code},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="updateMSharedCodeByCode">
+        update m_shared_code set
+        status = 1
+        where code in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <delete id="deleteMSharedCodeById" parameterType="Long">
+        delete from m_shared_code where id = #{id}
+    </delete>
+
+    <delete id="deleteMSharedCodeByIds" parameterType="String">
+        delete from m_shared_code where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

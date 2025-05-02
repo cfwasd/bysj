@@ -60,15 +60,16 @@
             @click="handleDelete"
             v-hasPermi="['manager:info:remove']"
         >删除</el-button>
-<!--      </el-col>-->
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--            type="warning"-->
-<!--            plain-->
-<!--            icon="Download"-->
-<!--            @click="handleExport"-->
-<!--            v-hasPermi="['manager:info:export']"-->
-<!--        >导出</el-button>-->
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+            type="warning"
+            plain
+            icon="Download"
+            :disabled="multiple"
+            @click="handleshared"
+            v-hasPermi="['manager:info:export']"
+        >分享</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
@@ -84,7 +85,7 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['manager:info:edit']">修改标题</el-button>
-          <el-button link type="primary" icon="Edit" @click="handleUpdateContent(scope.row)" v-hasPermi="['manager:info:edit']">修改</el-button>
+          <el-button link type="primary" icon="Edit" @click="handleUpdateContent(scope.row)" v-hasPermi="['manager:info:edit']">修改内容</el-button>
           <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['manager:info:remove']">删除</el-button>
         </template>
       </el-table-column>
@@ -99,7 +100,7 @@
     />
 
     <!-- 添加或修改【请填写功能名称】对话框 -->
-    <el-dialog :title="title" v-model="open" width="500px" append-to-body>
+    <el-dialog :title="htitle" v-model="open" width="500px" append-to-body>
       <el-form ref="infoRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="文档标题" prop="title">
           <el-input v-model="title" placeholder="请输入文档标题" />
@@ -112,6 +113,30 @@
         </div>
       </template>
     </el-dialog>
+
+
+    <!--    文件分享对话框-->
+    <el-dialog title="文件分享" v-model="isOpen" width="500px" append-to-body>
+      <el-form ref="codeRef" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="请选择分享码" label-width="160px" prop="code">
+          <el-select v-model="sharedFrom.sharedCode" placeholder="Select" style="width: 240px">
+            <el-option
+                v-model="sharedFrom.sharedCode"
+                v-for="item in options"
+                :key="item.id"
+                :label="item.code"
+                :value="item.code"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button type="primary" @click="shared">确 定</el-button>
+          <el-button @click="cancel">取 消</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -119,6 +144,8 @@
 import { listInfo, getInfo, delInfo, addInfo, updateInfo } from "@/api/manager/info";
 import router from "../../../../router/index.js";
 import {ElMessage} from "element-plus";
+import { addShared } from '@/api/manager/shared'
+import { listCode } from '@/api/manager/code'
 
 const { proxy } = getCurrentInstance();
 
@@ -131,6 +158,17 @@ const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
+const htitle = ref("");
+const options = ref([])
+const isOpen = ref(false);
+
+const sharedFrom = reactive({
+  sharedCode:"",
+  fileId:"",
+  type:"md",
+  isOutdate: 0,
+})
+
 
 const data = reactive({
   form: {},
@@ -207,7 +245,7 @@ function handleSelectionChange(selection) {
 function handleAdd() {
   reset();
   open.value = true;
-  title.value = "添加Markdown文档";
+  htitle.value = "添加Markdown文档";
 }
 
 function submitForm(){
@@ -236,7 +274,7 @@ function handleUpdate(row) {
   getInfo(_id).then(response => {
     form.value = response.data;
     open.value = true;
-    title.value = "修改Markdown文档";
+    htitle.value = "修改Markdown文档";
   });
 }
 
@@ -270,5 +308,30 @@ function handleExport() {
   }, `info_${new Date().getTime()}.xlsx`)
 }
 
+function handleshared(row){
+  isOpen.value = true;
+  listCode({"status":0}).then(response => {
+    options.value = response.rows
+  })
+}
+function shared(){
+  let files = "";
+  for (let i = 0; i<ids.value.length; i++) {
+    if (i === 0) {
+      files = ids.value[i];
+    }else {
+      files += ","+ids.value[i];
+    }
+  }
+  sharedFrom.fileId = files;
+  addShared(sharedFrom).then(response => {
+    if (response.code === 200){
+      ElMessage.success(response.msg);
+      isOpen = false;
+    }else {
+      ElMessage.error(response.msg);
+    }
+  })
+}
 getList();
 </script>

@@ -25,14 +25,7 @@
           @keyup.enter="handleQuery"
         />
       </el-form-item>
-<!--      <el-form-item label-width="auto" label="文件oss地址" prop="ossUrl">-->
-<!--        <el-input-->
-<!--          v-model="queryParams.ossUrl"-->
-<!--          placeholder="请输入文件oss地址"-->
-<!--          clearable-->
-<!--          @keyup.enter="handleQuery"-->
-<!--        />-->
-<!--      </el-form-item>-->
+
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" @click="resetQuery">重置</el-button>
@@ -40,24 +33,16 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
+
       <el-col :span="1.5">
-<!--        <el-button-->
-<!--          type="primary"-->
-<!--          plain-->
-<!--          icon="Plus"-->
-<!--          @click="handleAdd"-->
-<!--          v-hasPermi="['manager:fileInfo:add']"-->
-<!--        >新增</el-button>-->
-<!--      </el-col>-->
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--          type="success"-->
-<!--          plain-->
-<!--          icon="Edit"-->
-<!--          :disabled="single"-->
-<!--          @click="handleUpdate"-->
-<!--          v-hasPermi="['manager:fileInfo:edit']"-->
-<!--        >修改</el-button>-->
+        <el-button
+          type="success"
+          plain
+          icon="Edit"
+          :disabled="multiple"
+          @click="handleShared"
+          v-hasPermi="['manager:fileInfo:edit']"
+        >分享</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -69,15 +54,7 @@
           v-hasPermi="['manager:fileInfo:remove']"
         >删除</el-button>
       </el-col>
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--          type="warning"-->
-<!--          plain-->
-<!--          icon="Download"-->
-<!--          @click="handleExport"-->
-<!--          v-hasPermi="['manager:fileInfo:export']"-->
-<!--        >导出</el-button>-->
-<!--      </el-col>-->
+
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -88,7 +65,6 @@
       <el-table-column label="文件服务器位置" align="center" prop="fileRealFolder" />
       <el-table-column label="文件原始名" align="center" prop="fileRawName" />
       <el-table-column label="文件类型" align="center" prop="fileExtentions" />
-<!--      <el-table-column label="文件oss地址" align="center" prop="ossUrl" />-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" icon="Download" @click="handleUpdate(scope.row)" v-hasPermi="['manager:fileInfo:edit']">下载</el-button>
@@ -128,12 +104,38 @@
         </div>
       </template>
     </el-dialog>
+
+<!--    文件分享对话框-->
+    <el-dialog title="文件分享" v-model="isOpen" width="500px" append-to-body>
+      <el-form ref="codeRef" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="请选择分享码" label-width="160px" prop="code">
+          <el-select v-model="sharedFrom.sharedCode" placeholder="Select" style="width: 240px">
+            <el-option
+              v-model="sharedFrom.sharedCode"
+              v-for="item in options"
+              :key="item.id"
+              :label="item.code"
+              :value="item.code"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button type="primary" @click="shared">确 定</el-button>
+          <el-button @click="cancel">取 消</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup name="FileInfo">
 import { listFileInfo, getFileInfo, delFileInfo, addFileInfo, updateFileInfo } from "@/api/manager/fileInfo";
 import { getPreview, downloadFile } from '@/api/manager/files'
+import { listCode } from '@/api/manager/code'
+import { addShared } from '@/api/manager/shared'
+import {ElMessage} from "element-plus";
 
 const { proxy } = getCurrentInstance();
 
@@ -146,6 +148,15 @@ const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
+const isOpen = ref(false);
+
+const sharedFrom = reactive({
+  sharedCode:"",
+  fileId:"",
+  type:"file",
+  isOutdate: 0,
+})
+const options = ref([])
 
 const data = reactive({
   form: {},
@@ -182,6 +193,8 @@ function cancel() {
   open.value = false;
   reset();
 }
+
+
 
 // 表单重置
 function reset() {
@@ -278,6 +291,33 @@ function handleExport() {
   proxy.download('manager/fileInfo/export', {
     ...queryParams.value
   }, `fileInfo_${new Date().getTime()}.xlsx`)
+}
+
+function handleShared(row){
+  isOpen.value = true;
+  listCode({"status":0}).then(response => {
+    options.value = response.rows
+  })
+
+}
+function shared(){
+  let files = "";
+  for (let i = 0; i<ids.value.length; i++) {
+    if (i === 0) {
+      files = ids.value[i];
+    }else {
+      files += ","+ids.value[i];
+    }
+  }
+  sharedFrom.fileId = files;
+  addShared(sharedFrom).then(response => {
+    if (response.code === 200){
+      ElMessage.success(response.msg);
+      isOpen =false;
+    }else {
+      ElMessage.error(response.msg);
+    }
+  })
 }
 
 getList();
