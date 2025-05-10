@@ -58,3 +58,9 @@ export function getCodeImg() {
     timeout: 20000
   })
 }
+export function getImg(width, height) {
+  return request({
+    baseURL:'https://picsum.photos/'+width+'/'+height,
+    method: 'get'
+  })
+}

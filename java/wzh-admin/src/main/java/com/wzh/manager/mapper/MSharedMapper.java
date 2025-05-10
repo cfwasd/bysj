@@ -3,6 +3,7 @@ package com.wzh.manager.mapper;
 import java.util.Date;
 import java.util.List;
 import com.wzh.manager.domain.MShared;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -11,6 +12,7 @@ import org.apache.ibatis.annotations.Param;
  * @author wzh
  * @date 2025-05-02
  */
+@Mapper
 public interface MSharedMapper
 {
     /**
@@ -66,4 +68,8 @@ public interface MSharedMapper
     List<MShared> checkIsExist(@Param("sharedCode") String sharedCode, @Param("ids") Long[] ids);
 
     int updateMSharedByIds(@Param("updateDate") Date updateDate, @Param("ids") Long[] ids);
+
+    List<MShared> selectMSharedListByCode(@Param("code") String code);
+
+    String queryStatusByCode(String code);
 }

@@ -32,6 +32,13 @@
         <include refid="selectMMarkdownInfoVo"/>
         where id = #{id}
     </select>
+    <select id="selectMFileInfoListByCode" resultType="com.wzh.manager.domain.MarkdownInfo">
+        SELECT * from m_markdown_info
+        where id in (SELECT file_id from m_shared where type = 'md' and shared_code = #{code})
+        <if test="fileName != null and fileName != ''">
+            and title like concat('%', #{fileName}, '%')
+        </if>
+    </select>
 
     <insert id="insertMarkdownInfo" parameterType="MarkdownInfo" useGeneratedKeys="true" keyProperty="id">
         insert into m_markdown_info

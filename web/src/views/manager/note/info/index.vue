@@ -43,16 +43,6 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            type="success"
-            plain
-            icon="Edit"
-            :disabled="single"
-            @click="handleUpdate"
-            v-hasPermi="['manager:info:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
             type="danger"
             plain
             icon="Delete"
@@ -63,12 +53,11 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            type="warning"
+            type="success"
             plain
-            icon="Download"
+            icon="Share"
             :disabled="multiple"
             @click="handleshared"
-            v-hasPermi="['manager:info:export']"
         >分享</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
@@ -206,6 +195,7 @@ function getList() {
 // 取消按钮
 function cancel() {
   open.value = false;
+  isOpen.value = false;
   reset();
 }
 
@@ -327,10 +317,11 @@ function shared(){
   addShared(sharedFrom).then(response => {
     if (response.code === 200){
       ElMessage.success(response.msg);
-      isOpen = false;
+      isOpen.value = false;
     }else {
       ElMessage.error(response.msg);
     }
+    ids.value = []
   })
 }
 getList();

@@ -1,5 +1,5 @@
 <template>
-  <div class="login">
+  <div class="login" :style="{ backgroundImage: `url(${imgUrl})` }">
     <el-form ref="loginRef" :model="loginForm" :rules="loginRules" class="login-form">
       <h3 class="title">{{ title }}</h3>
       <el-form-item prop="username">
@@ -65,7 +65,7 @@
 </template>
 
 <script setup>
-import { getCodeImg } from "@/api/login";
+import { getCodeImg,getImg } from "@/api/login";
 import Cookies from "js-cookie";
 import { encrypt, decrypt } from "@/utils/jsencrypt";
 import useUserStore from '@/store/modules/user'
@@ -89,6 +89,20 @@ const loginRules = {
   password: [{ required: true, trigger: "blur", message: "请输入您的密码" }],
   code: [{ required: true, trigger: "change", message: "请输入验证码" }]
 };
+
+const screenWidth = ref(0);
+const screenHeight = ref(0);
+let imgUrl = ref("")
+
+const updateScreenSize = () => {
+  screenWidth.value = window.innerWidth;
+  screenHeight.value = window.innerHeight;
+  imgUrl.value = "https://picsum.photos/"+screenWidth.value+"/"+screenHeight.value
+};
+updateScreenSize();
+
+
+
 
 const codeUrl = ref("");
 const loading = ref(false);
@@ -169,7 +183,7 @@ getCookie();
   justify-content: center;
   align-items: center;
   height: 100%;
-  background-image: url("../assets/images/login.png");
+  //background-image: url("../assets/images/login.png");
   background-size: cover;
 }
 .title {

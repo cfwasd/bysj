@@ -2,6 +2,7 @@ package com.wzh.manager.mapper;
 
 import java.util.List;
 import com.wzh.manager.domain.MarkdownInfo;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 【请填写功能名称】Mapper接口
@@ -58,4 +59,6 @@ public interface MarkdownInfoMapper
      * @return 结果
      */
     public int deleteMarkdownInfoByIds(Long[] ids);
+
+    List<MarkdownInfo> selectMFileInfoListByCode(@Param("code") String code, @Param("fileName") String fileName);
 }

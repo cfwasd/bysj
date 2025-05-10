@@ -103,16 +103,23 @@ service.interceptors.response.use(res => {
     } else if (code !== 200) {
       ElNotification.error({ title: msg })
       return Promise.reject('error')
-    } else {
+    } else if(code === 503) {
+      ElMessage({ message: msg, type: 'warning' })
+    }
+    else {
       return  Promise.resolve(res.data)
     }
   },
   error => {
     console.log('err' + error)
     let { message } = error;
+    console.log(message)
     if (message == "Network Error") {
       message = "后端接口连接异常";
-    } else if (message.includes("timeout")) {
+    } else if (message.includes('code 503')) {
+      message = "系统已停用"
+    }
+    else if (message.includes("timeout")) {
       message = "系统接口请求超时";
     } else if (message.includes("Request failed with status code")) {
       message = "系统接口" + message.substr(message.length - 3) + "异常";

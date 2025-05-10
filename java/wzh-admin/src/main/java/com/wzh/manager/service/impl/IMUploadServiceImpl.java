@@ -81,6 +81,7 @@ public class IMUploadServiceImpl implements IMUploadService {
                 file.transferTo(file1);
                 mFileInfo.setFileName(newName);
                 mFileInfo.setFileRealFolder(saveAddr+format);
+                mFileInfo.setOssUrl("");
                 mFileInfoService.insertMFileInfo(mFileInfo);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
@@ -114,7 +115,7 @@ public class IMUploadServiceImpl implements IMUploadService {
 
             upload(bucketName,shortUuid+"."+FileUploadUtils.getExtension(file),file.getInputStream());
             // 上传并返回新文件名称
-            String fileNewName = MinioUtil.getPreviewUrl(bucketName, shortUuid+FileUploadUtils.getExtension(file),60*60);
+            String fileNewName = MinioUtil.getPreviewUrl(bucketName, shortUuid+FileUploadUtils.getExtension(file),60*60*24*6);
             fileNewName = fileNewName.replace(minio+"/file/",preUrl);
             AjaxResult ajax = AjaxResult.success();
             mFileInfo.setOssUrl(fileNewName);
@@ -140,7 +141,7 @@ public class IMUploadServiceImpl implements IMUploadService {
         }
         String fileName = mFileInfo.getFileName();
         try {
-            String url = MinioUtil.getPreviewUrl( bucketName, fileName,60 * 60);
+            String url = MinioUtil.getPreviewUrl(bucketName, fileName,60 * 60*24*6);
             return url.replace("http://154.201.84.30:9000/file/",preUrl);
         } catch (IOException e) {
             throw new FileOperationException("获取文件预览地址失败");

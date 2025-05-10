@@ -11,7 +11,7 @@
         <result property="type"    column="type"    />
         <result property="isOutdate"    column="is_outdate"    />
         <result property="updateDate"    column="update_date"    />
-        <result property="createTime"    column="create_time"    />
+        <result property="createDate"    column="create_time"    />
     </resultMap>
 
     <sql id="selectMSharedVo">
@@ -27,6 +27,7 @@
             <if test="isOutdate != null "> and is_outdate = #{isOutdate}</if>
             <if test="updateDate != null "> and update_date = #{updateDate}</if>
         </where>
+        order by id desc
     </select>
 
     <select id="selectMSharedById" parameterType="Long" resultMap="MSharedResult">
@@ -37,9 +38,16 @@
         <include refid="selectMSharedVo"/>
         where shared_code = #{sharedCode} and
         file_id in
-        <foreach item="id" collection="array" open="(" separator="," close=")">
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
             #{id}
         </foreach>
+    </select>
+    <select id="selectMSharedListByCode" resultMap="MSharedResult">
+        <include refid="selectMSharedVo"/>
+        where shared_code = #{code} and is_outdate = 0
+    </select>
+    <select id="queryStatusByCode" resultType="java.lang.String">
+        select status from m_shared_code where code = #{code}
     </select>
 
     <insert id="insertMShared" parameterType="MShared" useGeneratedKeys="true" keyProperty="id">
@@ -50,7 +58,7 @@
             <if test="type != null">type,</if>
             <if test="isOutdate != null">is_outdate,</if>
             <if test="updateDate != null">update_date,</if>
-            <if test="createTime != null">create_time,</if>
+            <if test="createDate != null">create_time,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="sharedCode != null">#{sharedCode},</if>
@@ -58,7 +66,7 @@
             <if test="type != null">#{type},</if>
             <if test="isOutdate != null">#{isOutdate},</if>
             <if test="updateDate != null">#{updateDate},</if>
-            <if test="createTime != null">#{createTime},</if>
+            <if test="createDate != null">#{createDate},</if>
         </trim>
     </insert>
     <insert id="insertMSharedList">
@@ -69,7 +77,7 @@
             <if test="list[0].type != null">type,</if>
             <if test="list[0].isOutdate != null">is_outdate,</if>
             <if test="list[0].updateDate != null">update_date,</if>
-            <if test="list[0].createTime != null">create_time,</if>
+            <if test="list[0].createDate != null">create_time,</if>
         </trim>
         VALUES
         <foreach collection="list" item="item" separator=",">
@@ -79,7 +87,7 @@
                 <if test="item.type != null">#{item.type},</if>
                 <if test="item.isOutdate != null">#{item.isOutdate},</if>
                 <if test="item.updateDate != null">#{item.updateDate},</if>
-                <if test="item.createTime != null">#{item.createTime},</if>
+                <if test="item.createDate != null">#{item.createDate},</if>
             </trim>
         </foreach>
     </insert>
@@ -92,7 +100,7 @@
             <if test="type != null">type = #{type},</if>
             <if test="isOutdate != null">is_outdate = #{isOutdate},</if>
             <if test="updateDate != null">update_date = #{updateDate},</if>
-            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createDate != null">create_time = #{createDate},</if>
         </trim>
         where id = #{id}
     </update>

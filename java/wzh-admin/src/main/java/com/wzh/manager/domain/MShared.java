@@ -13,7 +13,7 @@ import com.wzh.common.annotation.Excel;
  * @author wzh
  * @date 2025-05-02
  */
-public class MShared extends BaseEntity
+public class MShared
 {
     private static final long serialVersionUID = 1L;
 
@@ -40,6 +40,12 @@ public class MShared extends BaseEntity
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Excel(name = "数据更新时间", width = 30, dateFormat = "yyyy-MM-dd")
     private Date updateDate;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @Excel(name = "数据更新时间", width = 30, dateFormat = "yyyy-MM-dd")
+    private Date createDate;
+
+
 
     public void setId(Long id)
     {
@@ -101,6 +107,16 @@ public class MShared extends BaseEntity
         return updateDate;
     }
 
+    public void setCreateDate(Date createDate)
+    {
+        this.createDate = createDate;
+    }
+
+    public Date getCreateDate()
+    {
+        return createDate;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -110,7 +126,7 @@ public class MShared extends BaseEntity
                 .append("type", getType())
                 .append("isOutdate", getIsOutdate())
                 .append("updateDate", getUpdateDate())
-                .append("createTime", getCreateTime())
+                .append("createDate", getCreateDate())
                 .toString();
     }
 }

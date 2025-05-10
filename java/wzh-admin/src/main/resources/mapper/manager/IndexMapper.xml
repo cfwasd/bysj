@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wzh.manager.mapper.IndexMapper">
+
+
+    <select id="getTotal" resultType="java.util.Map">
+        SELECT count(*) as count from m_file_info
+    </select>
+    <select id="getTotal1" resultType="java.util.Map">
+        SELECT count(*) as count from m_markdown_info
+    </select>
+    <select id="getHeaderTotal" resultType="java.util.Map">
+        SELECT count(*) as count from m_file_info
+        where  file_extentions in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="resentUpload" resultMap="com.wzh.manager.mapper.MFileInfoMapper.MFileInfoResult">
+        select * from m_file_info order by id desc limit 5
+    </select>
+</mapper>

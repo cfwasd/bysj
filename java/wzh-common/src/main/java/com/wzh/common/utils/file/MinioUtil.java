@@ -108,7 +108,7 @@ public class MinioUtil
         MinioClient minioClient = SpringUtils.getBean(MinioClient.class);
         try
         {
-            String url = minioClient.getPresignedObjectUrl(
+            String url =  minioClient.getPresignedObjectUrl(
                 GetPresignedObjectUrlArgs.builder()
                     .method(Method.GET)
                     .bucket(bucketName)

@@ -2,6 +2,8 @@ package com.wzh.manager.service.impl;
 
 import java.util.Collections;
 import java.util.List;
+
+import com.wzh.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.wzh.manager.mapper.MFileInfoMapper;
@@ -53,6 +55,7 @@ public class MFileInfoServiceImpl implements IMFileInfoService
     @Override
     public int insertMFileInfo(MFileInfo mFileInfo)
     {
+        mFileInfo.setUploadTime(DateUtils.getNowDate());
         return mFileInfoMapper.insertMFileInfo(mFileInfo);
     }
 

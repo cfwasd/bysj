@@ -14,10 +14,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="fileName"    column="file_name"    />
         <result property="fileExtentions"    column="file_extentions"    />
         <result property="ossUrl"    column="oss_url"    />
+        <result property="uploadTime"    column="upload_time"    />
     </resultMap>
 
     <sql id="selectMFileInfoVo">
-        select id, uuid, folder, folder_id, file_real_folder, file_raw_name, file_name, file_extentions, oss_url from m_file_info
+        select id, uuid, folder, folder_id, file_real_folder, file_raw_name, file_name, file_extentions, oss_url, upload_time from m_file_info
     </sql>
 
     <select id="selectMFileInfoList" parameterType="MFileInfo" resultMap="MFileInfoResult">
@@ -43,6 +44,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             where folder_id = #{treeId}
             order by id
     </select>
+    <select id="selectMFileInfoListByCode" resultMap="MFileInfoResult">
+        SELECT * from m_file_info
+          where id in (SELECT file_id from m_shared where type = 'file' and shared_code = #{code})
+        <if test="fileName != null and fileName != ''">
+            and file_raw_name like concat('%', #{fileName}, '%')
+        </if>
+    </select>
 
     <insert id="insertMFileInfo" parameterType="MFileInfo" useGeneratedKeys="true" keyProperty="id">
         insert into m_file_info
@@ -55,6 +63,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="fileName != null">file_name,</if>
             <if test="fileExtentions != null">file_extentions,</if>
             <if test="ossUrl != null">oss_url,</if>
+            <if test="uploadTime != null">upload_time,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="uuid != null">#{uuid},</if>
@@ -65,6 +74,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="fileName != null">#{fileName},</if>
             <if test="fileExtentions != null">#{fileExtentions},</if>
             <if test="ossUrl != null">#{ossUrl},</if>
+            <if test="uploadTime != null">#{uploadTime},</if>
          </trim>
     </insert>
 

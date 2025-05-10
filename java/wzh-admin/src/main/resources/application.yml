@@ -92,8 +92,8 @@ spring:
 # minio 连接参数
 minio:
   url: http://154.201.84.30:9000
-  accessKey: RJzdwoAh07s2N9gzeWS9
-  secretKey: hVYncaivU3IVF7UWzDG9eaKNBhXGwZTsplZt6NIH
+  accessKey: miWSzbi3CG713Y7Co6Mg
+  secretKey: rcTgeEoKmnD3w60Bh8OWUceQLxYyvFOFVoexGTeM
   bucketName: file
   preview: https://prem.wangziheng.cloud/file/
 #  preview-expiry: 24 //图片预览过期时间 不需要可注掉

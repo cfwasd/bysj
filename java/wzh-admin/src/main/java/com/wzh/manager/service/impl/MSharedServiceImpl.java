@@ -59,7 +59,7 @@ public class MSharedServiceImpl implements IMSharedService
     @Override
     public AjaxResult insertMShared(MShared mShared)
     {
-        mShared.setCreateTime(DateUtils.getNowDate());
+        mShared.setCreateDate(DateUtils.getNowDate());
         if (mShared.getFileId().contains(",")){
             List<Long> ids = new ArrayList<>();
             String[] split = mShared.getFileId().split(",");
@@ -72,7 +72,7 @@ public class MSharedServiceImpl implements IMSharedService
                 m.setType(mShared.getType());
                 m.setIsOutdate(mShared.getIsOutdate());
                 m.setUpdateDate(DateUtils.getNowDate());
-                m.setCreateTime(DateUtils.getNowDate());
+                m.setCreateDate(DateUtils.getNowDate());
                 list.add(m);
             }
             List<MShared> checkIsExist = mSharedMapper.checkIsExist(mShared.getSharedCode(),ids.toArray(new Long[0]));
@@ -86,6 +86,7 @@ public class MSharedServiceImpl implements IMSharedService
             if (m != null && !m.isEmpty()){
                 throw new ServiceException("分享文件已经存在");
             }
+            mShared.setUpdateDate(DateUtils.getNowDate());
             mSharedMapper.insertMShared(mShared);
             return AjaxResult.success("添加成功");
         }

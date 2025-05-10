@@ -3,6 +3,7 @@ package com.wzh.manager.mapper;
 import java.util.List;
 import com.wzh.manager.domain.MFileInfo;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 文件信息Mapper接口
@@ -62,4 +63,6 @@ public interface MFileInfoMapper
     public int deleteMFileInfoByIds(Long[] ids);
 
     List<MFileInfo> selectMFileInfoByTreeId(Long treeId);
+
+    List<MFileInfo> selectMFileInfoListByCode(@Param("code") String code, @Param("fileName") String fileName);
 }

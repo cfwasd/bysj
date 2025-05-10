@@ -1,6 +1,5 @@
 package com.wzh;
 
-import com.wzh.front.interceptor.FileControllerInter;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -20,7 +19,7 @@ public class RuoYiServletInitializer extends SpringBootServletInitializer implem
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-//        WebMvcConfigurer.super.addInterceptors(registry);
-        registry.addInterceptor(new FileControllerInter());
+        WebMvcConfigurer.super.addInterceptors(registry);
+//        registry.addInterceptor(new FileControllerInter());
     }
 }

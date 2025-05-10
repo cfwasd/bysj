@@ -38,7 +38,7 @@
         <el-button
           type="success"
           plain
-          icon="Edit"
+          icon="Share"
           :disabled="multiple"
           @click="handleShared"
           v-hasPermi="['manager:fileInfo:edit']"
@@ -191,6 +191,7 @@ function getList() {
 // 取消按钮
 function cancel() {
   open.value = false;
+  isOpen.value = false;
   reset();
 }
 
@@ -313,10 +314,11 @@ function shared(){
   addShared(sharedFrom).then(response => {
     if (response.code === 200){
       ElMessage.success(response.msg);
-      isOpen =false;
+      isOpen.value =false;
     }else {
       ElMessage.error(response.msg);
     }
+    ids.value = []
   })
 }
 

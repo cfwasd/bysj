@@ -1,7 +1,9 @@
 package com.wzh.manager.service.impl;
 
 import java.security.MessageDigest;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import com.wzh.common.annotation.ServiceExceptionCatch;
 import com.wzh.common.constant.CacheConstants;
@@ -74,6 +76,9 @@ public class MSharedCodeServiceImpl implements IMSharedCodeService
         String code = createSharedCode();
         List<String> list = redisCache.getCacheList(CacheConstants.TEMP_FILE_CACHE);
         list.add(code);
+        redisCache.setCacheObject(code,code,7, TimeUnit.DAYS);
+        Collection keys = redisCache.keys(CacheConstants.TEMP_FILE_CACHE+"*");
+        redisCache.deleteObject(keys);
         redisCache.setCacheList(CacheConstants.TEMP_FILE_CACHE,list);
         mSharedCode.setCode(code);
         return mSharedCodeMapper.insertMSharedCode(mSharedCode);

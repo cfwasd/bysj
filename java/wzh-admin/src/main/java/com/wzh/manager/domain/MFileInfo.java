@@ -1,9 +1,12 @@
 package com.wzh.manager.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.wzh.common.core.domain.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.wzh.common.annotation.Excel;
+
+import java.util.Date;
 
 /**
  * 文件信息对象 m_file_info
@@ -49,6 +52,9 @@ public class MFileInfo extends BaseEntity
     /** 文件oss地址 */
     @Excel(name = "文件oss地址")
     private String ossUrl;
+
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    private Date uploadTime;
 
     public void setId(Long id) 
     {
@@ -140,6 +146,15 @@ public class MFileInfo extends BaseEntity
         return ossUrl;
     }
 
+
+    public Date getUploadTime() {
+        return uploadTime;
+    }
+
+    public void setUploadTime(Date uploadTime) {
+        this.uploadTime = uploadTime;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -152,6 +167,7 @@ public class MFileInfo extends BaseEntity
             .append("fileName", getFileName())
             .append("fileExtentions", getFileExtentions())
             .append("ossUrl", getOssUrl())
+            .append("uploadTime", getUploadTime())
             .toString();
     }
 }

@@ -24,6 +24,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { config } from 'md-editor-v3';
 import { MdEditor } from 'md-editor-v3';
 import 'md-editor-v3/lib/style.css';
 import { ExportPDF } from '@vavt/v3-extension';
@@ -44,6 +45,18 @@ watch(() => route.query.id, (newId) => {
   if(newId) {
     fetchContent(newId); // 根据新ID获取内容
   }
+});
+
+config({
+  // [keymap, minimalSetup, markdown, EditorView.lineWrapping, EditorView.updateListener, EditorView.domEventHandlers, oneDark??oneLight]
+  codeMirrorExtensions(theme, extensions) {
+    const newExtensions = [...extensions];
+    // 1. 把默认的快捷键扩展移除
+    newExtensions.shift();
+
+    // 2. 返回扩展列表即可
+    return newExtensions;
+  },
 });
 
 
